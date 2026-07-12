@@ -1,0 +1,68 @@
+{
+  "paths": {
+    "root": "D:\\_identify",
+    "inbox": "D:\\_identify\\Inbox",
+    "staging": "D:\\_identify\\Staging",
+    "archive": "D:\\_identify\\Archive"
+  },
+  "ollama": {
+    "host": "http://127.0.0.1:11434",
+    "vision_model": "qwen3-vl:4b",
+    "text_model": "llama3.2:3b",
+    "temperature": 0.1,
+    "context_length": 8192,
+    "keep_alive": "10m"
+  },
+  "naming": {
+    "active_schema": "default",
+    "schemas": {
+      "default": "{date}_{category}_{title}{extension}",
+      "compact": "{category}_{title}{extension}",
+      "archive": "{category}_{date}_{title}{extension}"
+    },
+    "date_format": "%Y-%m-%d",
+    "separator": "_",
+    "max_stem_length": 110,
+    "lowercase": false
+  },
+  "processing": {
+    "max_text_characters": 24000,
+    "pdf_render_dpi": 150,
+    "recursive_folder_scan": true,
+    "supported_extensions": [
+      ".pdf",
+      ".png",
+      ".jpg",
+      ".jpeg",
+      ".webp",
+      ".bmp",
+      ".gif",
+      ".txt",
+      ".md",
+      ".markdown",
+      ".csv",
+      ".json",
+      ".xml",
+      ".yaml",
+      ".yml",
+      ".log",
+      ".ini",
+      ".cfg",
+      ".toml",
+      ".py",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".html",
+      ".htm",
+      ".css",
+      ".scss",
+      ".sql",
+      ".ps1",
+      ".bat",
+      ".cmd",
+      ".sh"
+    ]
+  }
+}
