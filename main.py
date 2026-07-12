@@ -30,8 +30,8 @@ async def main(page: ft.Page) -> None:
 
     page.decoration = ft.BoxDecoration(
         gradient=ft.LinearGradient(
-            begin=ft.alignment.top_left,
-            end=ft.alignment.bottom_right,
+            begin=ft.Alignment(-1.0, -1.0),
+            end=ft.Alignment(1.0, 1.0),
             colors=["#0f172a", "#1e3a8a", "#0f172a"],
         )
     )
@@ -61,7 +61,7 @@ async def main(page: ft.Page) -> None:
     folder_picker = ft.FilePicker()
 
     status_text = ft.Text("Ready", size=13, color=ft.Colors.BLUE_GREY_200)
-    progress_bar = ft.ProgressBar(value=0, min_height=4)
+    progress_bar = ft.ProgressBar(value=0, bar_height=4)
     file_list = ft.ListView(expand=True, spacing=10, padding=0)
 
     pick_files_button = ft.FilledButton("Pick Files")
@@ -195,9 +195,9 @@ async def main(page: ft.Page) -> None:
 
     header = ft.Container(
         padding=ft.Padding.symmetric(horizontal=24, vertical=20),
-        bgcolor=ft.colors.with_opacity(0.1, ft.Colors.WHITE),
+        bgcolor="#1AFFFFFF",
         blur=ft.Blur(15, 15, ft.BlurTileMode.MIRROR),
-        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.with_opacity(0.1, ft.Colors.WHITE))),
+        border=ft.Border(bottom=ft.BorderSide(1, "#1AFFFFFF")),
         content=ft.Column(
             spacing=14,
             controls=[
@@ -287,9 +287,14 @@ def build_file_row(path: Path, placeholder_thumbnail: str) -> FileRow:
     container = ft.Container(
         padding=14,
         border_radius=14,
-        bgcolor=ft.colors.with_opacity(0.05, ft.Colors.WHITE),
+        bgcolor="#0DFFFFFF",
         blur=ft.Blur(10, 10, ft.BlurTileMode.MIRROR),
-        border=ft.border.all(1, ft.colors.with_opacity(0.1, ft.Colors.WHITE)),
+        border=ft.Border(
+            top=ft.BorderSide(1, "#1AFFFFFF"),
+            right=ft.BorderSide(1, "#1AFFFFFF"),
+            bottom=ft.BorderSide(1, "#1AFFFFFF"),
+            left=ft.BorderSide(1, "#1AFFFFFF"),
+        ),
         content=ft.Row(
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=14,
