@@ -26,6 +26,7 @@
     "lowercase": false
   },
   "processing": {
+    "analysis_workers": 2,
     "max_text_characters": 24000,
     "pdf_render_dpi": 150,
     "recursive_folder_scan": true,
