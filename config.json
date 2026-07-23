@@ -1,9 +1,9 @@
 {
   "paths": {
-    "root": "D:\\_identify",
-    "inbox": "D:\\_identify\\Inbox",
-    "staging": "D:\\_identify\\Staging",
-    "archive": "D:\\_identify\\Archive"
+    "root": ".",
+    "inbox": "Inbox",
+    "staging": "Staging",
+    "archive": "Archive"
   },
   "ollama": {
     "host": "http://127.0.0.1:11434",
@@ -32,6 +32,9 @@
     "recursive_folder_scan": true,
     "supported_extensions": [
       ".pdf",
+      ".docx",
+      ".xlsx",
+      ".pptx",
       ".png",
       ".jpg",
       ".jpeg",

@@ -36,7 +36,19 @@ def _load_config_sync() -> dict[str, Any]:
         missing = ", ".join(sorted(missing_sections))
         raise ValueError(f"config.json is missing required sections: {missing}")
 
+    paths = config["paths"]
+    for name in ("root", "inbox", "staging", "archive"):
+        if name not in paths:
+            raise ValueError(f"config.json paths is missing required value: {name}")
+        paths[name] = str(resolve_config_path(paths[name]))
+
     return config
+
+
+def resolve_config_path(value: str | Path) -> Path:
+    """Resolve a configurable path relative to the application folder."""
+    path = Path(value).expanduser()
+    return path if path.is_absolute() else (APP_DIR / path).resolve()
 
 
 async def get_thumbnail(file_path: str | Path) -> str:

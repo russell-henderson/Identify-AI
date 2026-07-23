@@ -1,153 +1,61 @@
 # Identify-AI
 
-A local-first desktop application that analyses documents, images, and text files using local LLMs via [Ollama](https://ollama.com) and proposes standardized filenames based on file content.
+Identify-AI is a local-first Windows desktop app for reviewing, standardizing, and safely staging filenames. It analyzes files with local Ollama models, lets you edit and approve the proposed filenames, then creates renamed copies in a Staging folder. Original files are never renamed, moved, or deleted.
 
----
+## Supported files
 
-## Prerequisites
+- PDFs: selectable text is analyzed across the document; scanned PDFs use the local vision model.
+- Images: PNG, JPG, JPEG, WEBP, BMP, and GIF.
+- Office documents: DOCX, XLSX, and PPTX, using local text extraction.
+- Plain text, structured data, configuration, and supported source-code files listed in `config.json`.
 
-| Requirement | Notes |
-|---|---|
-| Python 3.10+ | |
-| [Ollama](https://ollama.com/download) | Must be running before launching the app |
-| `qwen3-vl:4b` model | Vision - for images and PDFs |
-| `llama3.2:3b` model | Text - for documents and code |
+Legacy Office files (`.doc`, `.xls`, `.ppt`), password-protected documents, email files, and cloud synchronization are not part of this MVP.
 
-Pull the required models:
+## Setup
 
-```bash
-ollama pull qwen3-vl:4b
-ollama pull llama3.2:3b
+1. Install Python 3.10+ and [Ollama](https://ollama.com/download).
+2. Pull the configured models:
+
+   ```powershell
+   ollama pull qwen3-vl:4b
+   ollama pull llama3.2:3b
+   ```
+
+3. Create a virtual environment and install dependencies:
+
+   ```powershell
+   cd D:\_identify
+   python -m venv .venv
+   .venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+4. Start the app:
+
+   ```powershell
+   python main.py
+   ```
+
+At startup, the app verifies Ollama, the configured models, and its output folders. The default `Inbox`, `Staging`, and `Archive` paths in `config.json` are relative to the project folder, so the project can be moved without changing drive-specific paths.
+
+## Workflow
+
+1. Pick files or a folder.
+2. Review each category, explanation, and editable filename suggestion.
+3. Select **Approve** for the files to keep, then use **Stage Copy** or **Stage Approved**.
+4. Identify-AI creates a renamed copy in `Staging`; collision-safe suffixes are applied if needed.
+5. Find a Markdown report and JSON audit manifest under `Archive\Reports`.
+
+The manifest records the original path, final filename, category, approval status, staged path, model names, and outcome for every item in the batch.
+
+## Configuration
+
+`config.json` controls output paths, models, naming schemas, concurrency, extraction limits, and recursive scanning. Relative `paths` values are resolved from the application folder. Use `active_schema` to select one of the configured filename patterns; all generated or edited filenames are normalized for Windows and keep the source file's extension.
+
+## Validation
+
+Run the MVP regression suite with:
+
+```powershell
+.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
-
----
-
-## Installation
-
-```bash
-# 1. Clone or place files in your project folder
-cd D:\_identify
-
-# 2. Create and activate a virtual environment (recommended)
-python -m venv .venv
-.venv\Scripts\activate
-# source .venv/bin/activate     # macOS/Linux
-
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Create the required directories
-mkdir Inbox Staging Archive
-```
-
----
-
-## Project Structure
-
-```
-D:\_identify\
-├── config.json        <- paths, model names, naming settings
-├── utils.py           <- thumbnail generation and filename helpers
-├── analyzer.py        <- Ollama async analysis logic
-├── main.py            <- Flet GUI
-├── requirements.txt
-├── Inbox\             <- drop files here to analyse
-├── Staging\           <- future copy-to-staging workflow
-└── Archive\           <- long-term storage (manual)
-```
-
----
-
-## Running
-
-```bash
-python main.py
-```
-
----
-
-## How It Works
-
-1. Pick Files - choose individual files via the file picker.
-2. Pick Folder - choose a folder; files are scanned according to the recursive setting in `config.json`.
-3. Analysis runs sequentially in the current baseline. Thumbnail generation is concurrent.
-4. The vision model (`qwen3-vl:4b`) handles images and PDFs; the text model (`llama3.2:3b`) handles everything else.
-5. Each file card shows a live status, the suggested filename, the category, and the model's reasoning.
-6. Copy, rename, and apply actions are planned for a later pass; the current baseline is read-only.
-7. After each batch, the app writes a Markdown report to `Archive\Reports` with the file-level results and category summary.
-
----
-
-## Configuration (`config.json`)
-
-```jsonc
-{
-  "paths": {
-    "root": "D:\\_identify",
-    "inbox": "D:\\_identify\\Inbox",
-    "staging": "D:\\_identify\\Staging",
-    "archive": "D:\\_identify\\Archive"
-  },
-  "ollama": {
-    "host": "http://localhost:11434",
-    "vision_model": "qwen3-vl:4b",
-    "text_model": "llama3.2:3b"
-  },
-  "naming": {
-    "pattern": "{suggested_name}",
-    "max_length": 120,
-    "replace_spaces_with": "_",
-    "lowercase": true
-  },
-  "processing": {
-    "analysis_workers": 2,
-    "supported_extensions": [
-      ".pdf",
-      ".png",
-      ".jpg",
-      ".jpeg",
-      ".webp",
-      ".bmp",
-      ".gif",
-      ".txt",
-      ".md",
-      ".csv",
-      ".json",
-      ".xml",
-      ".yaml",
-      ".yml",
-      ".ini",
-      ".cfg",
-      ".log",
-      ".py",
-      ".js",
-      ".ts",
-      ".tsx",
-      ".jsx",
-      ".html",
-      ".css",
-      ".scss",
-      ".sql",
-      ".sh",
-      ".ps1",
-      ".bat",
-      ".cmd"
-    ],
-    "recursive_folder_scan": true
-  }
-}
-```
-
-The code reads the `paths`, `ollama`, `naming`, and `processing` sections above.
-`analysis_workers` defaults to 2 and caps how many files are analyzed at once.
-
----
-
-## Troubleshooting
-
-| Symptom | Fix |
-|---|---|
-| `ollama.ResponseError` | Ensure Ollama is running (`ollama serve`) and models are pulled |
-| Blank thumbnails for PDFs | `pip install PyMuPDF` |
-| `AttributeError: module 'flet.controls.material.icons'` | Do not pass `icon=` to `FilledButton` - already fixed in this codebase |
-| GUI freezes | The current baseline refreshes from background tasks; the new safety fix prevents destroyed-session errors when closing mid-batch |
